@@ -1,0 +1,26 @@
+autumn notes:
+-   initial docker notes in docker files.
+
+| Service                            | Role in Platform                                                                    |
+| ---------------------------------- | ----------------------------------------------------------------------------------- |
+| **FastAPI backend**                | The “brain” — handles REST APIs, WebSockets, user requests, orchestration commands. |
+| **PostgreSQL**                     | Persistent storage for workflows, runs, and logs (so workflows survive restarts).   |
+| **RabbitMQ**                       | Message broker — sends job messages from FastAPI to workers so processing is async. |
+| **Celery workers** *(to be added)* | Execute workflow steps in the background (long tasks, retries, scheduling).         |
+| **React frontend** *(later)*       | Visual editor and monitoring dashboard for workflows.                               |
+
+
+FastAPI just accepts requests and queues tasks into RabbitMQ.
+
+Celery pulls tasks from RabbitMQ and runs them in parallel.
+
+PostgreSQL tracks the state of workflows and steps.
+
+Pydantic is for:
+Data validation → Automatically check that input matches your defined schema.
+
+Data parsing → Convert data into proper Python types (e.g., "123" → 123 for integers).
+
+Clear error messages → Show exactly what’s wrong in invalid inputs.
+
+
