@@ -24,3 +24,7 @@ Data parsing → Convert data into proper Python types (e.g., "123" → 123 for 
 Clear error messages → Show exactly what’s wrong in invalid inputs.
 
 
+sqlalchemy.orm.relationships: It defines a connection between two ORM models that already have a ForeignKey column linking them.
+
+
+
