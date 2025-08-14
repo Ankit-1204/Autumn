@@ -1,7 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from . import models, schemas, crud
+from .database import SessionLocal, engine
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Workflow backend is running"}
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+# response_model => to shape the response accordingly
+@app.post("/workflows/", response_model=schemas.WorkflowRead)
+def create_workflow(workflow: schemas.WorkflowCreate, db: Session = Depends(get_db)):
+    return crud.create_workflow(db, workflow)
+
+@app.get("/workflows/", response_model=list[schemas.WorkflowRead])
+def list_workflows(db: Session = Depends(get_db)):
+    return crud.get_workflows(db)

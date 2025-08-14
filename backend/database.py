@@ -12,7 +12,7 @@ engine=create_engine(
 )
 
 # used to interact with DB 
-session=sessionmaker(autocommit=False,autoflush=False,bind=engine)
+SessionLocal=sessionmaker(autocommit=False,autoflush=False,bind=engine)
 
 # this is the base class for all db model
 Base=declarative_base()
