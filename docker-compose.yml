@@ -32,7 +32,25 @@ services:
     depends_on:
       - db
       - rabbitmq
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
 
+  worker:
+    build:
+      context: ./backend
+    command: celery -A backend.celery_app.celery worker --loglevel=info --concurrency=1
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      
 volumes:
   postgres_data:
 

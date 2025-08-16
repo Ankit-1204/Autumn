@@ -36,7 +36,7 @@ def create_workflowRun(db: Session, workflow_id:int):
     db.refresh(run)
     return run
 
-def update_workflowRun_status(db:Session, run_id:int,status:str):
+def update_run_status(db:Session, run_id:int,status:str):
     stmt = (
         update(models.WorkflowRun)
         .where(models.WorkflowRun.id==run_id)
