@@ -5,6 +5,9 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "amqp://guest:guest@rabbitmq:5672//"
     CELERY_RESULT_BACKEND: str = "rpc://"
 
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
+
     class Config:
         env_file = ".env"
 

@@ -21,5 +21,6 @@ class WorkflowRun(Base):
     workflow_id = Column(Integer, ForeignKey("workflows.id"), nullable=False)
     status = Column(String(50), default="pending", index=True)
     started_at = Column(DateTime(timezone=True), server_default=func.now())
-    completed_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True),nullable=True)
     workflow=relationship("Workflow", back_populates="instances")
+    logs = Column(Text, nullable=True)

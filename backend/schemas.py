@@ -22,8 +22,9 @@ class WorkflowRunBase(BaseModel):
 class WorkflowRunRead(WorkflowRunBase):
     id: int
     workflow_id: int
+    status: str
     started_at: datetime
     finished_at: Optional[datetime] = None
-
+    logs: Optional[str]
     class Config:
         orm_mode = True
