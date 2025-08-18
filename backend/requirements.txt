@@ -6,3 +6,4 @@ alembic
 pydantic
 pydantic_settings
 celery
+requests

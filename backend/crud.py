@@ -4,6 +4,7 @@ import models, schemas
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, update
 from sqlalchemy.sql import func
+from typing import Any,Optional,List
 
 def create_workflow(db: Session, workflow: schemas.WorkflowCreate):
     payload = workflow.model_dump()
@@ -36,13 +37,32 @@ def create_workflowRun(db: Session, workflow_id:int):
     db.refresh(run)
     return run
 
-def update_run_status(db:Session, run_id:int,status:str):
-    stmt = (
-        update(models.WorkflowRun)
-        .where(models.WorkflowRun.id==run_id)
-        .values(status=status, finished_at=func.now() if status=="success" else None)
-        .execution_options(synchronize_session="fetch")
-    )
+
+def update_run_status(db: Session, run_id: int, status: str, logs: Optional[str] = None, append_logs: bool = False):
+    """
+    Update run status. If append_logs True, append 'logs' to existing logs.
+    If status is 'success' or 'failed', completed_at is set to now().
+    """
+    # fetch current run to append logs if necessary
+    run = db.get(models.WorkflowRun, run_id)
+    if run is None:
+        return
+
+    new_logs = logs
+    if append_logs and logs:
+        existing = run.logs or ""
+        if existing:
+            new_logs = existing + "\n" + logs
+        else:
+            new_logs = logs
+
+    values = {"status": status}
+    if new_logs is not None:
+        values["logs"] = new_logs
+    if status in ("success", "failed"):
+        values["completed_at"] = func.now()
+
+    stmt = update(models.WorkflowRun).where(models.WorkflowRun.id == run_id).values(**values).execution_options(synchronize_session="fetch")
     db.execute(stmt)
     try:
         db.commit()

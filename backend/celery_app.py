@@ -6,11 +6,11 @@ celery_app = Celery(
     backend=settings.CELERY_RESULT_BACKEND
 )
 
-celery_app.conf.update(
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-    task_track_started=True,
-    worker_prefetch_multiplier=1,  # safer for long-running tasks
-)
-# celery_app.autodiscover_tasks(["app.tasks"], force=True)
+# celery_app.conf.update(
+#     task_serializer="json",
+#     accept_content=["json"],
+#     result_serializer="json",
+#     task_track_started=True,
+#     worker_prefetch_multiplier=1,  # safer for long-running tasks
+# )
+celery_app.autodiscover_tasks(["tasks"], force=True)

@@ -40,7 +40,7 @@ services:
   worker:
     build:
       context: ./backend
-    command: celery -A backend.celery_app.celery worker --loglevel=info --concurrency=1
+    entrypoint: ["./worker-entrypoint.sh"]
     volumes:
       - ./backend:/app
     depends_on:
