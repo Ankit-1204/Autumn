@@ -19,6 +19,10 @@ class WorkflowRead(WorkflowBase):
 class WorkflowRunBase(BaseModel):
     status: str
 
+class WorkflowRunCreate(WorkflowRunBase):
+    # for now no extra params; could include overrides / input payload
+    pass
+
 class WorkflowRunRead(WorkflowRunBase):
     id: int
     workflow_id: int

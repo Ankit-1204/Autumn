@@ -1,6 +1,6 @@
 from multiprocessing import synchronize
 from sqlalchemy.orm import Session
-from . import models, schemas
+import models, schemas
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, update
 from sqlalchemy.sql import func
@@ -40,7 +40,7 @@ def update_run_status(db:Session, run_id:int,status:str):
     stmt = (
         update(models.WorkflowRun)
         .where(models.WorkflowRun.id==run_id)
-        .values(status=status, finished_at=func.now() if status=="success")
+        .values(status=status, finished_at=func.now() if status=="success" else None)
         .execution_options(synchronize_session="fetch")
     )
     db.execute(stmt)

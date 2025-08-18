@@ -1,5 +1,5 @@
-from celery import Celery;
-from core.config import settings
+from celery import Celery
+from settings import settings
 celery_app = Celery(
     "workflow_service",
     broker=settings.CELERY_BROKER_URL,
@@ -13,4 +13,4 @@ celery_app.conf.update(
     task_track_started=True,
     worker_prefetch_multiplier=1,  # safer for long-running tasks
 )
-celery_app.autodiscover_tasks(["app.tasks"], force=True)
+# celery_app.autodiscover_tasks(["app.tasks"], force=True)

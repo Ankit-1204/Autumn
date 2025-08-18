@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from . import models, schemas, crud
-from .database import SessionLocal, engine
-from .celery_app import celery_app
+import models, schemas, crud
+from database import SessionLocal, engine
+from celery_app import celery_app
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def create_workflow(workflow: schemas.WorkflowCreate, db: Session = Depends(get_
 def list_workflows(db: Session = Depends(get_db)):
     return crud.get_workflows(db)
 
-@app.post("workflows/{workflow_id}/runs",response_model=schemas.WorkflowRunRead,status_code=status.HTTP_201_CREATED)
+@app.post("/workflows/{workflow_id}/runs",response_model=schemas.WorkflowRunRead,status_code=status.HTTP_201_CREATED)
 def start_run(workflow_id:int,payload: schemas.WorkflowRunCreate = None,db: Session = Depends(get_db)):
     workflow=crud.get_workflow(db,workflow_id);
     if workflow is None:

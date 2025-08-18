@@ -13,7 +13,7 @@ class Workflow(Base):
 
     # relationships, to connect instances of tables already connected with foregin keys
     # behaviour changes depending on where foreign key is. 1-to-many vs 1-to-1
-    instances = relationship("WorkflowInstance", back_populates="workflow")
+    instances = relationship("WorkflowRun", back_populates="workflow")
 
 class WorkflowRun(Base):
     __tablename__="workflow_runs"
