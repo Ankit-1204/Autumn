@@ -1,9 +1,12 @@
 fastapi
-uvicorn[standard]
+uvicorn
 sqlalchemy
 psycopg2-binary
 alembic
 pydantic
-pydantic_settings
+pydantic-settings
 celery
 requests
+redis
+python-jose[cryptography]
+passlib[bcrypt]

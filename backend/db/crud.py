@@ -1,10 +1,10 @@
 from multiprocessing import synchronize
 from sqlalchemy.orm import Session
-import models, schemas
+from db import models, schemas
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, update
 from sqlalchemy.sql import func
-from typing import Any,Optional,List
+from typing import Any,Optional,List,Dict
 
 def create_workflow(db: Session, workflow: schemas.WorkflowCreate):
     payload = workflow.model_dump()
@@ -71,3 +71,30 @@ def update_run_status(db: Session, run_id: int, status: str, logs: Optional[str]
         # re-raise a domain-specific error or return None; in FastAPI route raise HTTPException(409)
         raise
     
+def create_step_instance(db: Session, run_id: int, step_id: str, name: Optional[str]) -> models.StepInstance:
+    si = models.StepInstance(run_id=run_id, step_id=step_id, name=name, status="pending")
+    db.add(si)
+    db.commit()
+    db.refresh(si)
+    return si
+
+def update_step_instance(db: Session, step_instance_id: int, *, status: Optional[str] = None,
+                         logs: Optional[str] = None, output: Optional[Dict[str, Any]] = None):
+    si = db.get(models.StepInstance, step_instance_id)
+    if si is None:
+        return
+    if status:
+        si.status = status
+        if status == "running":
+            si.started_at = func.now()
+        elif status in ("success", "failed"):
+            si.finished_at = func.now()
+    if logs is not None:
+        existing = si.logs or ""
+        si.logs = existing + ("\n" + logs if existing else logs)
+    if output is not None:
+        si.output = output
+    db.add(si)
+    db.commit()
+    db.refresh(si)
+    return si

@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import models, schemas, crud
-from database import SessionLocal, engine
+from db import models, schemas,crud
+from db.database import SessionLocal, engine
 from celery_app import celery_app
 import logging
+from notifications import router as notifications_router
 
 logger = logging.getLogger(__name__)
-app = FastAPI()
+app = FastAPI(title="Autumn")
+app.include_router(notifications_router)
 
 
 def get_db():

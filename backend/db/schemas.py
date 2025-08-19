@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 
 class WorkflowBase(BaseModel):
@@ -30,5 +30,19 @@ class WorkflowRunRead(WorkflowRunBase):
     started_at: datetime
     completed_at: Optional[datetime] = None
     logs: Optional[str]
+    class Config:
+        orm_mode = True
+
+class StepInstanceRead(BaseModel):
+    id: int
+    run_id: int
+    step_id: str
+    name: Optional[str]
+    status: str
+    started_at: Optional[datetime]
+    completed_at: Optional[datetime]
+    logs: Optional[str]
+    output: Optional[Any]
+
     class Config:
         orm_mode = True
