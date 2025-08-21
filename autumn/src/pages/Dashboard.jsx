@@ -3,58 +3,87 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import RunButton from '../components/RunButton'
 
-
 export default function Dashboard() {
-const [workflows, setWorkflows] = useState([])
-const [loading, setLoading] = useState(true)
-const [selectedRunLog, setSelectedRunLog] = useState(null)
+  const [workflows, setWorkflows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [selectedRunLog, setSelectedRunLog] = useState(null)
 
+  useEffect(() => {
+    let mounted = true
+    
+    async function load() {
+      try {
+        const res = await api.get('/workflows')
+        if (mounted) {
+          setWorkflows(res.data || [])
+        }
+      } catch (err) {
+        console.error(err)
+        if (mounted) {
+          setError('Failed to fetch workflows')
+        }
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+    
+    load()
+    return () => { mounted = false }
+  }, [])
 
-useEffect(() => {
-let mounted = true
-async function load() {
-try {
-const res = await api.get('/workflows')
-if (mounted) setWorkflows(res.data || [])
-} catch (err) {
-console.error(err)
-alert('Failed to fetch workflows')
-} finally { if (mounted) setLoading(false) }
-}
-load()
-return () => { mounted = false }
-}, [])
+  if (loading) return <div className="loading">Loading...</div>
 
+  return (
+    <div className="container dashboard">
+      <div className="dashboard-header">
+        <h1 className="dashboard-title">Your Workflows</h1>
+        <p className="dashboard-subtitle">Manage and monitor your workflow executions</p>
+      </div>
 
-if (loading) return <div className="p-6">Loading...</div>
+      {error && <div className="error mb-4">{error}</div>}
 
+      <div className="workflow-grid">
+        {workflows.length === 0 ? (
+          <div className="text-center text-secondary">
+            You have no workflows yet.
+          </div>
+        ) : (
+          workflows.map(wf => (
+            <div key={wf.id} className="workflow-card">
+              <div className="workflow-header">
+                <div>
+                  <h3 className="workflow-title">{wf.name}</h3>
+                  <p className="workflow-date">
+                    Created: {new Date(wf.created_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="workflow-actions">
+                  <RunButton workflowId={wf.id} onOpenLog={(log) => setSelectedRunLog(log)} />
+                  <Link to={`/workflows/${wf.id}`} className="btn btn-secondary">
+                    Open
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
-return (
-<div className="p-6">
-<h1 className="text-2xl font-bold mb-4">Your workflows</h1>
-<div className="space-y-4">
-{workflows.length === 0 && <div className="text-gray-600">You have no workflows yet.</div>}
-{workflows.map(wf => (
-<div key={wf.id} className="border rounded p-4 flex justify-between items-center">
-<div>
-<div className="font-semibold">{wf.name}</div>
-<div className="text-sm text-gray-500">Created: {new Date(wf.created_at).toLocaleString()}</div>
-</div>
-<div className="flex gap-2">
-<RunButton workflowId={wf.id} onOpenLog={(log)=>setSelectedRunLog(log)} />
-<Link to={`/workflows/${wf.id}`} className="px-3 py-1 border rounded text-sm">Open</Link>
-</div>
-</div>
-))}
-</div>
-
-
-{selectedRunLog && (
-<div className="mt-6 bg-gray-800 text-white p-4 rounded">
-<h3 className="font-bold mb-2">Run logs</h3>
-<pre className="whitespace-pre-wrap">{selectedRunLog}</pre>
-<button onClick={()=>setSelectedRunLog(null)} className="mt-2 px-3 py-1 bg-gray-200 text-black rounded">Close</button>
-</div>
-)}
-</div>)
+      {selectedRunLog && (
+        <div className="workflow-card mt-4">
+          <h3 className="workflow-title mb-4">Run Logs</h3>
+          <pre style={{ whiteSpace: 'pre-wrap', background: '#f8fafc', padding: '1rem', borderRadius: '0.375rem' }}>
+            {selectedRunLog}
+          </pre>
+          <button 
+            onClick={() => setSelectedRunLog(null)} 
+            className="btn btn-secondary mt-4"
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }

@@ -2,6 +2,7 @@ from db.database import Base
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from .user_models import User
 
 class Workflow(Base):
     __tablename__='workflows'

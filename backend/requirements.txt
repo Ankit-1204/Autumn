@@ -10,3 +10,4 @@ requests
 redis
 python-jose[cryptography]
 passlib[bcrypt]
+pydantic[email]

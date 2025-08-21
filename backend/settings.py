@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://redis:6379/0"
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    SECRET_KEY: str
+    SECRET_KEY: str = "AB12H34BB21"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     ALGORITHM: str = "HS256"
 

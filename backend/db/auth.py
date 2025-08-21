@@ -1,4 +1,4 @@
-from ..settings import settings
+from settings import settings
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -19,14 +19,12 @@ def verify_password(plain, hashed):
 def hash_password(password):
     return pwd_context.hash(password)
 
-# 2. JWT creation
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     expire = datetime.now() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# 3. JWT verification
 def decode_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -37,7 +35,6 @@ def decode_token(token: str):
             detail="Invalid or expired token",
         )
 
-# 4. dependency to get current user
 def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_token(token)
     user_id: int = payload.get("sub")
